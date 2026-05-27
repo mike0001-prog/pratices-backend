@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/5.1/ref/settings/
 """
 
 from pathlib import Path
+import os
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -20,12 +21,12 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-3t5ic5rr*!0l)7pps8!=*ih%mw*41k1g4)x=ch12zhdg)h0dh#'
+SECRET_KEY = os.getenv("SECRET_KEY",'django-insecure-3t5ic5rr*!0l)7pps8!=*ih%mw*41k1g4)x=ch12zhdg)h0dh#')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = os.getenv("DEBUG",True)
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = os.getenv("ALLOWED_HOSTS","*").split(",")
 
 
 # Application definition
@@ -129,6 +130,23 @@ CHANNEL_LAYERS = {
         "BACKEND": "channels.layers.InMemoryChannelLayer",
     },
 }
+if DEBUG:
+   CHANNEL_LAYERS = {
+    "default": {
+        "BACKEND": "channels.layers.InMemoryChannelLayer",
+    },
+} 
+else:
+    CHANNEL_LAYERS = {
+    "default": {
+    "BACKEND": "channels_redis.core.RedisChannelLayer",
+    "CONFIG": {
+        "hosts": [
+            os.getenv("REDIS_URL")
+        ],
+    },
+    },
+    }
 # Internationalization
 # https://docs.djangoproject.com/en/5.1/topics/i18n/
 

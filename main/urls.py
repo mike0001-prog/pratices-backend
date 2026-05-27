@@ -20,6 +20,6 @@ urlpatterns = [
     path("user/change_username/",updateusername),
     path("user/change_password/", changepassword),
     path("user/profile/", user_profile),
-
+    # path("voice_speech/", test_voices_speech ),
 
 ]

@@ -7,7 +7,7 @@ from .models import TodoList,TodoListItem
 from .serializer import (TodoListItemSerializer,TodoListSerializer,
                          MessageSerializer,RegistrationSerializer
 ,RoomSerializer,LoginSerializer,TokenSerializer,UpdateUsernameSerializer,
-ChangePasswordSerializer,UserSerializer)
+ChangePasswordSerializer,UserSerializer,TestVoiceSerializer)
 from django.contrib.auth.forms import SetPasswordForm,UserCreationForm
 from django.contrib.auth import authenticate
 from rest_framework.filters import SearchFilter
@@ -192,3 +192,39 @@ def user_profile(request):
     message_count = Message.objects.filter(sender=request.user).aggregate(count=Count("id"))
     data = {"room_count":rooms_count["count"],"message_count":message_count["count"]}
     return Response(data,status=status.HTTP_200_OK)
+
+
+
+
+
+# import os
+# import uuid
+# import pyttsx3
+# from django.conf import settings
+# from django.http import JsonResponse
+# @api_view(["POST"])
+# def test_voices_speech(request):
+#     # text = request.GET.get("text", "Hello world")
+#     serializer = TestVoiceSerializer(data=request.data)    
+
+#     text = ""
+#     if serializer.is_valid():
+#         print("valid")
+#         text = serializer.validated_data["text"]
+#     # Create engine
+#     engine = pyttsx3.init()
+
+#     engine.setProperty("rate", 145)
+#     engine.setProperty("volume", 1.0)
+#     filename = f"{uuid.uuid4()}.mp3"
+
+#     # Save path
+#     audio_dir = os.path.join(settings.MEDIA_ROOT, "audio")
+#     os.makedirs(audio_dir, exist_ok=True)
+
+#     filepath = os.path.join(audio_dir, filename)
+
+   
+#     engine.save_to_file(text, filepath)
+#     engine.runAndWait()
+#     return Response({"url":f"/media/audio/{filename}"},status=status.HTTP_200_OK)

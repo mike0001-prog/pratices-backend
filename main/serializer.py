@@ -90,3 +90,6 @@ class ChangePasswordSerializer(serializers.Serializer):
 #         fields = ["username"]
 # class UserProfileSerializer(serializers.Serializer):
 #     user = 
+
+class TestVoiceSerializer(serializers.Serializer):
+    text = serializers.CharField()
