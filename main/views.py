@@ -8,7 +8,7 @@ from .serializer import (TodoListItemSerializer,TodoListSerializer,
                          MessageSerializer,RegistrationSerializer
 ,RoomSerializer,LoginSerializer,TokenSerializer,UpdateUsernameSerializer,
 ChangePasswordSerializer,UserSerializer,TestVoiceSerializer)
-from django.contrib.auth.forms import SetPasswordForm,UserCreationForm
+from django.contrib.auth.forms import SetPasswordForm
 from django.contrib.auth import authenticate
 from rest_framework.filters import SearchFilter
 from django.db.models import Q,Count
@@ -100,6 +100,7 @@ def create_get_messages(request,roomId):
         if serializer.is_valid():
             serializer.save(room=room)
             return Response(serializer.data,status=status.HTTP_201_CREATED)
+        return Response(serializer.errors,status=status.HTTP_400_BAD_REQUEST)
     elif request.method == "GET":
         print("getting user")
         user = request.user
@@ -112,20 +113,26 @@ def create_get_messages(request,roomId):
         return Response(data=serializer.data,status=status.HTTP_200_OK)
 
 @api_view(["GET"])
+@permission_classes([IsAuthenticated])
 def getusers(request):
-    connected_user = (Room.objects.filter(Q(user_one=request.user) | Q(user_two=request.user))
-                    .select_related("user_one","user_two")
-                    .values_list("user_one","user_two"))
-    print(list(connected_user))
-    connected_user_list_pair = list(connected_user)
-    connected_user_list = []
-    for i in connected_user_list_pair:
-        for j in i:
-            connected_user_list.append(j)
-    # if not set(connected_user_list) :
-    #     connected_user_list = set(connected_user_list).append(re)        
-    connected_user_list = set(connected_user_list)
-    query = User.objects.exclude(id__in = connected_user_list)
+    search_query = request.query_params.get("search",None)
+    if not search_query:
+        connected_user = (Room.objects.filter(Q(user_one=request.user) | Q(user_two=request.user))
+                        .select_related("user_one","user_two")
+                        .values_list("user_one","user_two"))
+        print(list(connected_user))
+        connected_user_list_pair = list(connected_user)
+        connected_user_list = []
+        for i in connected_user_list_pair:
+            for j in i:
+                connected_user_list.append(j)
+        # if not set(connected_user_list) :
+        #     connected_user_list = set(connected_user_list).append(re)        
+        connected_user_list = set(connected_user_list)
+        query = User.objects.exclude(id__in = connected_user_list)
+
+    if search_query:
+        query = User.objects.filter(username__icontains = search_query)
     
     serializer = UserSerializer(query,many=True)
     return Response(serializer.data,status=status.HTTP_200_OK)
@@ -194,7 +201,8 @@ def user_profile(request):
     return Response(data,status=status.HTTP_200_OK)
 
 
-
+# def search_users(request):
+#     pass
 
 
 # import os
