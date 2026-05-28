@@ -128,29 +128,34 @@ REST_FRAMEWORK = {
 }
 CORS_ALLOW_ALL_ORIGINS = True
 
-# CHANNEL_LAYERS = {
+CHANNEL_LAYERS = {
+"default": {
+"BACKEND": "channels_redis.core.RedisChannelLayer",
+"CONFIG": {
+    "hosts": [
+        os.getenv("REDIS_URL")
+    ],
+},
+},
+}
+
+# if DEBUG:
+#    CHANNEL_LAYERS = {
 #     "default": {
 #         "BACKEND": "channels.layers.InMemoryChannelLayer",
 #     },
-# }
-
-if DEBUG:
-   CHANNEL_LAYERS = {
-    "default": {
-        "BACKEND": "channels.layers.InMemoryChannelLayer",
-    },
-} 
-else:
-    CHANNEL_LAYERS = {
-    "default": {
-    "BACKEND": "channels_redis.core.RedisChannelLayer",
-    "CONFIG": {
-        "hosts": [
-            os.getenv("REDIS_URL")
-        ],
-    },
-    },
-    }
+# } 
+# else:
+#     CHANNEL_LAYERS = {
+#     "default": {
+#     "BACKEND": "channels_redis.core.RedisChannelLayer",
+#     "CONFIG": {
+#         "hosts": [
+#             os.getenv("REDIS_URL")
+#         ],
+#     },
+#     },
+#     }
 # Internationalization
 # https://docs.djangoproject.com/en/5.1/topics/i18n/
 
@@ -167,12 +172,7 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/5.1/howto/static-files/
 
 STATIC_URL = 'static/'
-CACHES = {
-    "default": {
-        "BACKEND": "django.core.cache.backends.filebased.FileBasedCache",
-        "LOCATION": BASE_DIR / "django_cache",
-    }
-}
+
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
