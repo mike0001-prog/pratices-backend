@@ -61,10 +61,10 @@ class UserSerializer(serializers.ModelSerializer):
 class RoomSerializer(serializers.ModelSerializer):
     user_one_name = serializers.StringRelatedField(source = "user_one",read_only=True)
     user_two_name = serializers.StringRelatedField(source = "user_two",read_only=True)
-    # user_one_name = ser
+
     class Meta:
         model = Room 
-        fields = ["uuid","user_one","user_two","user_one_name","user_two_name"]
+        fields = ["uuid","user_one","user_two","user_one_name","user_two_name","updated_at"]
 class TokenSerializer(serializers.ModelSerializer):
     user_name = serializers.StringRelatedField(source="user",read_only=True)
     user = serializers.PrimaryKeyRelatedField(read_only=True)

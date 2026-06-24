@@ -5,6 +5,7 @@ from asgiref.sync import async_to_sync
 from channels.layers import get_channel_layer
 from django.contrib.auth.models import User
 from .serializer import MessageSerializer
+from django.utils import timezone
 """
 implemntation for suscribe on demand 
 a room may not have been added so there is a
@@ -18,20 +19,7 @@ def message_signal(sender,instance,created,**kwargs):
         channel_layer = get_channel_layer()
         print("created")
         serializer = MessageSerializer(instance)
-        # try:
-        #         room_id = instance.room.id
-        #         # print(f"chat_{room_id}")
-        #         room_group_name = f"chat_{room_id}"
-        #         print(f"signals {room_group_name}")
-        #         async_to_sync(channel_layer.group_send)(
-        #         room_group_name,
-        #         {
-        #             "type": "chat.message",
-        #             "data": serializer.data,
-        #         }
-        #     )
-        # except e:
-        #     print(e)
+      
         user_room = f"room_{instance.room.user_one}" 
         if instance.room.user_one == instance.sender:
             user_room = f"room_{instance.room.user_two}"
@@ -44,6 +32,8 @@ def message_signal(sender,instance,created,**kwargs):
                 "data": {"type":"suscribe_room","data":serializer.data},
             }
         )
+        instance.room.updated_at = timezone.now()
+        instance.room.save()
         print(f"created message {instance.content}")
 
 

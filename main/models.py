@@ -24,7 +24,7 @@ class Room(models.Model):
     user_one = models.ForeignKey(User,on_delete=models.CASCADE, related_name="room_user_one", null= True,default=None)
     user_two = models.ForeignKey(User,on_delete=models.CASCADE, related_name="room_user_two",null=True, default=None )
     created_at = models.DateTimeField(auto_now_add=True)
-    # updated_at = models.DateTimeField(default=timezone.now())
+    updated_at = models.DateTimeField(default=timezone.now())
     # last_message = models.TextField()
     # title = models.CharField(default="none", max_length=100)
 

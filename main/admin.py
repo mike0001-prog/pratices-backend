@@ -10,13 +10,18 @@ class TodoListAdmin(admin.ModelAdmin):
 class TodoListItemAdmin(admin.ModelAdmin):
     model = TodoListItem
 
+
+class MessageStackedInline(admin.StackedInline):
+    model = Message
+
 @admin.register(Room)
 class RoomAdmin(admin.ModelAdmin):
     model = Room
+    inlines = [MessageStackedInline]
 
 @admin.register(Message)
 class MessagesAdmin(admin.ModelAdmin):
     model = Message
 
-
+    
 

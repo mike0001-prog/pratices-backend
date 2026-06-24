@@ -16,7 +16,8 @@ from rest_framework.decorators import api_view,permission_classes
 from rest_framework import status
 from .models import Message,Room
 from django.contrib.auth.models import User
-
+from django.core.paginator import Paginator
+from rest_framework.pagination import PageNumberPagination
 class TodoListAPIView(generics.ListCreateAPIView):
     permission_classes = [AllowAny]
     serializer_class = TodoListSerializer
@@ -73,13 +74,21 @@ class RoomCreateList(generics.ListCreateAPIView):
             return Room.objects.filter(Q(user_one=self.request.user) | Q(user_two =self.request.user) )
         # except Exception:
         #     print(f"somthing went wrong {Exception}")
-        
-    
 
-# class UserCreate(generics.CreateAPIView):
-#     serializer_class = RegistrationSerializer
-#     queryset = User.objects.all()
-#     permission_classes = [AllowAny]
+# @api_view(["GET","POST"])
+# def create_list_room():
+#     if request.method == "POST":
+#         serializer = RoomSerializer(data=request.data)
+#         if serializer.is_valid():
+#             return Response(serializer.data,status = status.HTTP_201_CREATED)
+#         else:
+#             return Response(serializer.errors,status = status.HTTP_400_BAD_REQUEST)
+#     queryset = Room.objects.filter(Q(user_one=self.request.user) | Q(user_two =self.request.user) )
+#     serializer = RoomSerializer(query,many=True)
+#     return Response(serializer.data,status= status.HTTP_200_OK)
+#     pass
+
+
 @api_view(["POST"])
 def register(request):
     if request.method == "POST":
@@ -102,14 +111,23 @@ def create_get_messages(request,roomId):
             return Response(serializer.data,status=status.HTTP_201_CREATED)
         return Response(serializer.errors,status=status.HTTP_400_BAD_REQUEST)
     elif request.method == "GET":
-        print("getting user")
+        
         user = request.user
         print(user)
         room = get_object_or_404(Room,Q(user_one=user) | Q(user_two =user),uuid=roomId)
         print(room)
-        query = Message.objects.filter(room=room).select_related("room","sender")
-        serializer = MessageSerializer(query,many=True)
+        query = Message.objects.filter(room=room).select_related("room","sender").order_by("-created_at")
+        
+        paginator = PageNumberPagination()
+        paginator.page_size = 10
+        page = paginator.paginate_queryset(query,request)
+        print(page)
+        if page is not None:
+            serializer = MessageSerializer(page,many=True)
+            paginated_data = paginator.get_paginated_response(serializer.data)
+            return paginated_data
         print("return data")
+        serializer = MessageSerializer(query,many=True)
         return Response(data=serializer.data,status=status.HTTP_200_OK)
 
 @api_view(["GET"])

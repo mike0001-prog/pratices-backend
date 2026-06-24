@@ -128,34 +128,34 @@ REST_FRAMEWORK = {
 }
 CORS_ALLOW_ALL_ORIGINS = True
 
-CHANNEL_LAYERS = {
-"default": {
-"BACKEND": "channels_redis.core.RedisChannelLayer",
-"CONFIG": {
-    "hosts": [
-        os.getenv("REDIS_URL")
-    ],
-},
-},
-}
+# CHANNEL_LAYERS = {
+# "default": {
+# "BACKEND": "channels_redis.core.RedisChannelLayer",
+# "CONFIG": {
+#     "hosts": [
+#         os.getenv("REDIS_URL")
+#     ],
+# },
+# },
+# }
 
-# if DEBUG:
-#    CHANNEL_LAYERS = {
-#     "default": {
-#         "BACKEND": "channels.layers.InMemoryChannelLayer",
-#     },
-# } 
-# else:
-#     CHANNEL_LAYERS = {
-#     "default": {
-#     "BACKEND": "channels_redis.core.RedisChannelLayer",
-#     "CONFIG": {
-#         "hosts": [
-#             os.getenv("REDIS_URL")
-#         ],
-#     },
-#     },
-#     }
+if DEBUG:
+   CHANNEL_LAYERS = {
+    "default": {
+        "BACKEND": "channels.layers.InMemoryChannelLayer",
+    },
+} 
+else:
+    CHANNEL_LAYERS = {
+    "default": {
+    "BACKEND": "channels_redis.core.RedisChannelLayer",
+    "CONFIG": {
+        "hosts": [
+            os.getenv("REDIS_URL")
+        ],
+    },
+    },
+    }
 # Internationalization
 # https://docs.djangoproject.com/en/5.1/topics/i18n/
 
